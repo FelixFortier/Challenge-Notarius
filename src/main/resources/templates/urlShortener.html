@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>URL Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+<body>
+Enter URL to shorten
+<form action="shortenUrls" method="POST">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="URL to shorten" aria-label="urltoshorten" name="longUrl"/>
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Button</button>
+    </div>
+    <label>Your shortened URL :</label><h1 th:text="${shortenedURL}"/>
+</form>
+<form action="getLongUrl" method="GET">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Short URL to reverse" aria-label="urltoreverse" name="shortUrl"/>
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon3">Button</button>
+    </div>
+    <label>The original URL :</label><h1 th:text="${foundLongURL}"/>
+</form>
+<table class="table table-dark">
+    <thead>
+    <tr>
+        <th scope="col">id</th>
+        <th scope="col">Long</th>
+        <th scope="col">Short</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="urlList: ${urlList}">
+        <td th:text="${urlList.id}"/>
+        <td th:text="${urlList.longUrl}"/>
+        <td th:text="${urlList.shortUrl}"/>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
