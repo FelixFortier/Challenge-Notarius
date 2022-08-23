@@ -38,7 +38,7 @@ public class UrlService {
      */
     public Urls getUrlsFromLong(String longUrl){
         try{
-            return urlRepository.findUrlsByLongUrl(longUrl).get();
+            return urlRepository.findUrlsByLongUrl(longUrl).orElseThrow();
         }catch(NoSuchElementException nsee){
             return new Urls("Error : No URL found from long","Error : No URL found from long");
         }
@@ -48,7 +48,7 @@ public class UrlService {
      * Méthode qui insert un objet Urls dans la base de données s'il n'y est pas déjà présent. Autrement un message d'erreur est envoyé à la console.
      * @param urls l'objet Urls à sauvegarder dans la base de données
      */
-    public void saveAndShortenUrls(Urls urls) {
+    public void saveUrls(Urls urls) {
         if (urlRepository.findUrlsByShortUrl(urls.getShortUrl()).isEmpty()) {
             urlRepository.insert(urls);
         } else {

@@ -1,15 +1,16 @@
 package com.example.urlshortener;
 
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 @AllArgsConstructor
 public class UrlController {
+
     private final UrlService urlService;
 
     /**
@@ -21,6 +22,7 @@ public class UrlController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("urlShortener");
         modelAndView.addObject("urlList",urlService.getAllUrls());
+        modelAndView.getModelMap().getAttribute("urlList");
         return modelAndView;
     }
 
@@ -34,22 +36,34 @@ public class UrlController {
     public ModelAndView shortenUrls(@ModelAttribute Urls urls){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("urlShortener");
+        System.out.println(urls.toString());
+        if(urls == null || urls.getLongUrl().equals("")){
 
-        String trimmedlongurl = trimURL(urls.getLongUrl());
-        urls.setLongUrl(trimmedlongurl);
-
-        if(urlService.getUrlsFromLong(trimmedlongurl).getLongUrl().equals("Error : No URL found from long")){
-            String shortenedUrl = "surl.com/"+generateBase62Id();
-            urls.setShortUrl(shortenedUrl);
-            urlService.saveAndShortenUrls(urls);
-            modelAndView.addObject("shortenedURL",urlService.getUrlsFromShort(urls.getShortUrl()).getShortUrl());
+            modelAndView.addObject("shortenedURL","Please input a URL");
             modelAndView.addObject("urlList",urlService.getAllUrls());
+            return modelAndView;
+
         }else{
-            modelAndView.addObject("shortenedURL","Already exists : " + urlService.getUrlsFromLong(urls.getLongUrl()).getShortUrl());
-            modelAndView.addObject("urlList",urlService.getAllUrls());
+            String trimmedlongurl = trimURL(urls.getLongUrl());
+            urls.setLongUrl(trimmedlongurl);
+
+            Urls foundUrl = urlService.getUrlsFromLong(trimmedlongurl);
+            //System.out.println(foundUrl.toString());
+
+            if(foundUrl == null || foundUrl.getLongUrl().equals("Error : No URL found from long")){
+                String shortenedUrl = "surl.com/"+generateBase62Id();
+                urls.setShortUrl(shortenedUrl);
+                urlService.saveUrls(urls);
+                modelAndView.addObject("shortenedURL",shortenedUrl);
+                modelAndView.addObject("urlList",urlService.getAllUrls());
+            }else{
+                modelAndView.addObject("shortenedURL","Already exists : " + urlService.getUrlsFromLong(urls.getLongUrl()).getShortUrl());
+                modelAndView.addObject("urlList",urlService.getAllUrls());
+            }
+
+            return modelAndView;
         }
 
-        return modelAndView;
     }
 
     /**
@@ -78,6 +92,7 @@ public class UrlController {
     public ModelAndView getLongUrl(@ModelAttribute Urls urls){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("urlShortener");
+
         modelAndView.addObject("foundLongURL",urlService.getUrlsFromShort(urls.getShortUrl()).getLongUrl());
         modelAndView.addObject("urlList",urlService.getAllUrls());
 
